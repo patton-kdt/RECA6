@@ -18,7 +18,7 @@
       name: "{{ item.student_id + '-IaC' }}"
       state: "poweredon"
       datacenter: '{{ datacenter_name }}'
-      folder: "{{ 'RECA6/3.Students/' + item.student_id }}"
+      folder: "{{ '3.Students/' + item.student_id }}"
       esxi_hostname: '{{ item.esxi }}'
       datastore: "{{ item.datastore }}"
       template: "{{ iac_template }}"
