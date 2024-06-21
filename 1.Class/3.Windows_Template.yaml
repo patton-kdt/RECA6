@@ -1,0 +1,45 @@
+## https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_guest_module.html
+
+---
+- hosts: localhost
+  vars_files: ./vars.yaml
+
+  tasks: 
+    - name: Create Lab VM - Template Windows Server
+      community.vmware.vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: 'false'
+        datacenter: '{{datacenter_name}}'
+        folder: '{{ folder_prefix + student_ID }}'
+        name: '{{ item.vmname }}'
+        state: poweredoff
+        guest_id: '{{ item.guest_id }}'
+        esxi_hostname: "{{ esxi_hostname }}"
+        hardware:
+          version: 20
+          num_cpus: '{{ item.cpus }}'
+          nested_virt: '{{ item.nested }}'
+          memory_mb: '{{ item.memory }}'
+          scsi: paravirtual
+        disk:
+        - size_gb: 90
+          controller_type: 'paravirtual'
+          controller_number: 0
+          unit_number: 0
+          type: thin
+          datastore: '{{ datastore_name }}'
+        networks:
+        - name: '{{ public_net }}'
+          device_type: vmxnet3
+        cdrom:
+        - controller_number: 0
+          unit_number: 0
+          state: present
+          type: iso
+          iso_path: '{{ item.iso_filename }}'
+      loop:
+      - { vmname: "{{ student_ID + '-WinTemp'}}", guest_id: windows2019srvNext_64Guest, cpus: 4, nested: true, memory: 8192,  iso_filename : "{{ iso_folder + 'ko-kr_windows_server_2022_updated_june_2024_x64_dvd_8c5a802d.iso' }}" }
+      delegate_to: localhost
+      register: deploy_vm      
