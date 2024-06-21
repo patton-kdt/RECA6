@@ -24,4 +24,4 @@ public_net: "VM-192.16.1.x"
 private_net: "{{ student_ID + '-Trunk' }}"
 
 datastore_name: "Local-05"
-iso_folder: "[{{ datastore_name }}]\\ISOs\\"
+iso_folder: "[{{ datastore_name }}]\\ISO\\"
