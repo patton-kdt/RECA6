@@ -1,0 +1,42 @@
+---
+- hosts: localhost
+  vars:
+    ansible_python_interpreter: /bin/python3
+    vcenter_hostname: "vcsa.vclass.reca6"
+    vcenter_username: "administrator@vsphere.reca6"
+    vcenter_password: "VMware1!"
+    datacenter_name: "RECA6"
+    iac_template: "IaC-05"
+
+  tasks:
+  - name: Deploy IaC VM from Template
+    community.vmware.vmware_guest:
+      hostname: "{{ vcenter_hostname }}"
+      username: "{{ vcenter_username }}"
+      password: "{{ vcenter_password }}"
+      validate_certs: no
+      name: "{{ item.student_id + '-IaC' }}"
+      state: "poweredon"
+      datacenter: '{{ datacenter_name }}'
+      folder: "{{ 'RECA6/3.Students/' + item.student_id }}"
+      esxi_hostname: '{{ item.esxi }}'
+      datastore: "{{ item.datastore }}"
+      template: "{{ iac_template }}"
+    loop:
+    - { student_id: S00, esxi: esxi-05.vclass.reca6, datastore: Local-05 }  
+    - { student_id: S01, esxi: esxi-01.vclass.reca6, datastore: Local-01 }  
+    - { student_id: S02, esxi: esxi-02.vclass.reca6, datastore: Local-02 }  
+    - { student_id: S03, esxi: esxi-03.vclass.reca6, datastore: Local-03 }  
+    - { student_id: S04, esxi: esxi-04.vclass.reca6, datastore: Local-04 }  
+    - { student_id: S05, esxi: esxi-05.vclass.reca6, datastore: Local-05 }  
+    - { student_id: S06, esxi: esxi-01.vclass.reca6, datastore: Local-01 }  
+    - { student_id: S07, esxi: esxi-02.vclass.reca6, datastore: Local-02 }  
+    - { student_id: S08, esxi: esxi-03.vclass.reca6, datastore: Local-03 }  
+    - { student_id: S09, esxi: esxi-04.vclass.reca6, datastore: Local-04 }  
+    - { student_id: S10, esxi: esxi-05.vclass.reca6, datastore: Local-05 }  
+    - { student_id: S11, esxi: esxi-01.vclass.reca6, datastore: Local-01 }  
+    - { student_id: S12, esxi: esxi-02.vclass.reca6, datastore: Local-02 }  
+    - { student_id: S13, esxi: esxi-03.vclass.reca6, datastore: Local-03 }  
+    - { student_id: S14, esxi: esxi-04.vclass.reca6, datastore: Local-04 }  
+    - { student_id: S15, esxi: esxi-05.vclass.reca6, datastore: Local-05 }  
+    delegate_to: localhost
