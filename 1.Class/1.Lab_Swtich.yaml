@@ -36,7 +36,7 @@
         vlan_id: 4095
       delegate_to: localhost
 
-    - name: Adding Site A Management Portgroup
+    - name: Adding Management Portgroup
       community.vmware.vmware_portgroup:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
@@ -48,7 +48,7 @@
         vlan_id: 10
       delegate_to: localhost
 
-    - name: Adding Site A Storage Portgroup
+    - name: Adding Storage Portgroup
       community.vmware.vmware_portgroup:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
@@ -60,7 +60,7 @@
         vlan_id: 11
       delegate_to: localhost
 
-    - name: Adding Site A vMotion Portgroup
+    - name: Adding vMotion Portgroup
       community.vmware.vmware_portgroup:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
@@ -72,7 +72,7 @@
         vlan_id: 12
       delegate_to: localhost
 
-    - name: Adding Site A Production Portgroup
+    - name: Adding Production Portgroup
       community.vmware.vmware_portgroup:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
