@@ -20,7 +20,7 @@ esxi_hostname: "esxi-05.vclass.reca6"
 esxi_password: "VMware1!"
 esxi_username: "root"
 
-public_net: "VM-192.16.1.x"
+public_net: "VM-172.16.1.x"
 private_net: "{{ student_ID + '-Trunk' }}"
 
 datastore_name: "Local-05"
