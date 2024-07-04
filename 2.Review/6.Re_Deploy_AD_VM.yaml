@@ -29,6 +29,7 @@
           autologon: true
           autologoncount: 5
           password: VMware1!
+          timezone: 230
         wait_for_customization: yes
         wait_for_customization_timeout: 360
       delegate_to: localhost
