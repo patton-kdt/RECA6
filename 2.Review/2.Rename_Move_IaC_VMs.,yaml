@@ -66,6 +66,6 @@
         validate_certs: no
         datacenter: '{{ datacenter_name }}'
         name: '{{ item }}-IaC'
-        dest_folder: '{{ new_folder_name }}'
+        dest_folder: "//{{ datacenter_name }}/vm/4.Review/{{ item }}"
       loop: '{{ new_Student_IDs }}'
       delegate_to: localhost
