@@ -43,17 +43,22 @@
       - S14
       - S15
 
-  tasks: 
+  tasks:
     - name: rename IaC VMs
       community.vmware.vmware_object_rename:
         hostname: '{{ vcenter_hostname }}'
         username: '{{ vcenter_username }}'
         password: '{{ vcenter_password }}'
         validate_certs: no
-        new_name: '{{ item.new }}'
-        object_name: '{{ item.old }}'
+        new_name: '{{ new_student }}-IaC'
+        object_name: '{{ old_student }}-IaC'
         object_type: VirtualMachine
-      loop: '{{ old: "{{old_Student_IDs}}-IaC", new: "{{new_Student_IDs}}-IaC" }}'
+      loop: "{{ query('zip', old_Student_IDs, new_Student_IDs) }}"
+      loop_control:
+        label: "{{ item.0 }}"
+      vars:
+        old_student: "{{ item.0 }}"
+        new_student: "{{ item.1 }}"
       delegate_to: localhost
 
     - name: move IaC VMs to new folder
@@ -63,7 +68,7 @@
         password: '{{ vcenter_password }}'
         validate_certs: no
         datacenter: '{{ datacenter_name }}'
-        name: '{{ item.name }}'
-        dest_folder: '{{ item.folder }}'
-      loop: '{{ name: "{{ new_Student_IDs }}-IaC", folder: {{ new_Student_IDs }} }}'
+        name: '{{ item }}-IaC'
+        dest_folder: '{{ new_folder_name }}'
+      loop: '{{ new_Student_IDs }}'
       delegate_to: localhost
