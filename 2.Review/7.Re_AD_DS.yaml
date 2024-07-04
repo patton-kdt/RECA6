@@ -1,3 +1,5 @@
+## https://chatgpt.com/share/a0bbc223-4bbf-481e-8953-f1bf29e19875
+
 ---
 - hosts: localhost
   vars_files: ./vars.yaml
