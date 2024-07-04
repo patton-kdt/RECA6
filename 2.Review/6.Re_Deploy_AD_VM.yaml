@@ -11,9 +11,7 @@
         validate_certs: 'false'
         datacenter: '{{datacenter_name}}'
         folder: '{{ folder_prefix + student_ID }}'
-        name: '{{ item.vmname }}'
-        state: poweredoff
-        guest_id: '{{ item.guest_id }}'
+        name: "{{ student_ID }}-DC"
         esxi_hostname: "{{ esxi_hostname }}"
         template: "{{ template_windows }}"
         networks:
@@ -27,8 +25,11 @@
           dns_servers: 172.16.1.2
           type: static
         customization:
+          hostname: AD
+          autologon: true
+          autologoncount: 5
           password: VMware1!
         wait_for_customization: yes
         wait_for_customization_timeout: 360
       delegate_to: localhost
-      ignore_errors: yes     
+      ignore_errors: yes
