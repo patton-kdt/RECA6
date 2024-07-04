@@ -1,0 +1,44 @@
+## https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_guest_module.html
+
+---
+- hosts: localhost
+  vars_files: ./vars.yaml
+
+  tasks: 
+    - name: Create Lab VM - Router
+      community.vmware.vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: 'false'
+        datacenter: '{{datacenter_name}}'
+        folder: '{{ folder_prefix + student_ID }}'
+        name: '{{ item.vmname }}'
+        state: poweredoff
+        guest_id: '{{ item.guest_id }}'
+        esxi_hostname: "{{ esxi_hostname }}"
+        hardware:
+          version: 20
+          num_cpus: '{{ item.cpus }}'
+          nested_virt: '{{ item.nested }}'
+          memory_mb: '{{ item.memory }}'
+          scsi: paravirtual
+        disk:
+        - size_gb: '{{ item.disk_gb }}'
+          type: thin
+          datastore: '{{ datastore_name }}'
+        networks:
+        - name: '{{ public_net }}'
+          device_type: vmxnet3
+        - name: '{{ private_net }}'
+          device_type: vmxnet3
+        cdrom:
+        - controller_number: 0
+          unit_number: 0
+          state: present
+          type: iso
+          iso_path: '{{ item.iso_filename }}'
+      loop:
+      - { vmname: "{{ student_ID + '-Router'}}", guest_id: debian10_64Guest, cpus: 2, nested: false, memory: 2048,  disk_gb: 10, iso_filename : "{{ iso_folder + 'vyos-1.5-rolling-202406200020-amd64.iso' }}" }
+      delegate_to: localhost
+      register: deploy_vm
