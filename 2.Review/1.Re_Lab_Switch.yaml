@@ -1,0 +1,42 @@
+## https://chatgpt.com/share/7d39cada-21fa-40de-a06d-36587fbd5a54
+
+---
+- hosts: localhost
+  vars_files: ./vars.yaml
+
+  tasks: 
+    - name: Create Lab Standard Switch
+      community.vmware.vmware_vswitch:
+        hostname: '{{ esxi_hostname }}'
+        username: '{{ esxi_username }}'
+        password: '{{ esxi_password }}'
+        validate_certs: no
+        switch: '{{ student_ID }}'
+        security:
+          promiscuous_mode: True
+          mac_changes: True
+          forged_transmits: True
+      delegate_to: localhost
+
+    - name: Waiting 10 seconds for completing switch
+      wait_for:
+        timeout: 10
+      delegate_to: localhost
+
+    - name: Adding Portgroups
+      community.vmware.vmware_portgroup:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        esxi_hostname: "{{ esxi_hostname }}"
+        validate_certs: no
+        switch: "{{ student_ID }}"
+        portgroup: "{{ item.name }}"
+        vlan_id: "{{ item.vlan_id }}"
+      loop:
+        - { name: "{{ student_ID }}-Trunk", vlan_id: 4095 }
+        - { name: "{{ student_ID }}-Mgmt", vlan_id: 10 }
+        - { name: "{{ student_ID }}-Storage", vlan_id: 11 }
+        - { name: "{{ student_ID }}-vMotion", vlan_id: 12 }
+        - { name: "{{ student_ID }}-Prod", vlan_id: 13 }
+      delegate_to: localhost
