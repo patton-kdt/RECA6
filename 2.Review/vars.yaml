@@ -1,0 +1,29 @@
+ansible_python_interpreter: /bin/python3
+
+student_ID: "R00"
+
+vcenter_hostname: "vcsa.vclass.reca6"
+vcenter_username: "S00@vclass.reca6"
+vcenter_password: "VMware1!"
+
+datacenter_name: "RECA6"
+
+folder_prefix: "RECA6/vm/4.Review/"
+
+# R01, R06, R11 --> esxi_host : esxi-01.vclass.reca6
+# R02, R07, R12 --> esxi_host : esxi-02.vclass.reca6
+# R03, R08, R13 --> esxi_host : esxi-03.vclass.reca6
+# R04, R09, R14 --> esxi_host : esxi-04.vclass.reca6
+# R05, R10, R15 --> esxi_host : esxi-05.vclass.reca6
+
+esxi_hostname: "esxi-05.vclass.reca6"
+esxi_password: "VMware1!"
+esxi_username: "root"
+
+public_net: "VM-172.16.1.x"
+private_net: "{{ student_ID + '-Trunk' }}"
+
+datastore_name: "Local-05"
+iso_folder: "[{{ datastore_name }}]\\ISO\\"
+
+template_windows: "S00-WinTemp"
