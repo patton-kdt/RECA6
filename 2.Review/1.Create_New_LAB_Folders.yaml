@@ -1,0 +1,51 @@
+---
+- hosts: localhost
+  vars:
+    ansible_python_interpreter: /bin/python3
+    vcenter_hostname: "vcsa.vclass.reca6"
+    vcenter_username: "administrator@vsphere.reca6"
+    vcenter_password: "VMware1!"
+    datacenter_name: "RECA6"
+    new_folder_name: "4.Review"
+    new_Student_IDs:
+      - R00
+      - R01
+      - R02
+      - R03
+      - R04
+      - R05
+      - R06
+      - R07
+      - R08
+      - R09
+      - R10
+      - R11
+      - R12
+      - R13
+      - R14
+      - R15
+
+  tasks: 
+    - name: Create a New Lab folder
+      community.vmware.vcenter_folder:
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        validate_certs: no
+        datacenter: '{{ datacenter_name }}'
+        folder_name: '{{ new_folder_name }}'
+        state: present
+
+    - name: Create students folder under new folder
+      community.vmware.vcenter_folder:
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        validate_certs: no
+        datacenter: '{{ datacenter_name }}'
+        folder_name: '{{ item }}'
+        parent_folder: '{{ new_folder_name }}'
+        state: present
+      register: sub_folder_creation_result
+      loop: new_Student_IDs
+      delegate_to: localhost
