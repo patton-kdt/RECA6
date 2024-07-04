@@ -1,0 +1,41 @@
+## https://chatgpt.com/share/b1c8b326-b48a-4ee6-9495-876456c5f6c9
+
+---
+- hosts: localhost
+  vars_files: ./vars.yaml
+
+  tasks:
+    - name: Create Folder and Copy Script
+      community.vmware.vmware_guest_file_operation:
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        validate_certs: false
+        vm_id: "{{ student_ID + '-DC' }}"
+        vm_id_type: vm_name
+        vm_username: 'Administrator'
+        vm_password: 'VMware1!'
+        loop:
+          - { directory: { path: "c:\\Review", operation: create, recurse: false } }
+          - { copy: { src: "/mnt/c/Review/8.dns_ad.ps1", dest: "c:\\Review\\8.dns_ad.ps1", overwrite: true } }
+      delegate_to: localhost
+
+    - name: Run and Delete Script
+      community.vmware.vmware_vm_shell:
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        validate_certs: false
+        vm_id: "{{ student_ID + '-DC' }}"
+        vm_id_type: vm_name
+        vm_username: 'Administrator'
+        vm_password: 'VMware1!'
+        vm_shell: 'c:\windows\system32\windowspowershell\v1.0\powershell.exe'
+        loop:
+          - '-command "(c:\Review\8.dns_ad.ps1)"'
+          - '-command "(Remove-Item -path c:\Review\8.dns_ad.ps1)"'
+        vm_shell_args: "{{ item }}"
+        vm_shell_cwd: 'c:\Users\Administrator'
+        wait_for_process: true
+        timeout: 60
+      delegate_to: localhost
