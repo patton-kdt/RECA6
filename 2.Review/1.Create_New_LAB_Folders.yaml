@@ -47,5 +47,5 @@
         parent_folder: '{{ new_folder_name }}'
         state: present
       register: sub_folder_creation_result
-      loop: new_Student_IDs
+      loop: '{{ new_Student_IDs }}'
       delegate_to: localhost
