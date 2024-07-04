@@ -1,0 +1,34 @@
+---
+- hosts: localhost
+  vars_files: ./vars.yaml
+
+  tasks: 
+    - name: Deploy DC VM form Windows Template
+      community.vmware.vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: 'false'
+        datacenter: '{{datacenter_name}}'
+        folder: '{{ folder_prefix + student_ID }}'
+        name: '{{ item.vmname }}'
+        state: poweredoff
+        guest_id: '{{ item.guest_id }}'
+        esxi_hostname: "{{ esxi_hostname }}"
+        template: "{{ template_windows }}"
+        networks:
+        - name: "{{ student_ID + '-Mgmt' }}"
+          label: "Network adapter 1"
+          connected: True
+          start_connected: True
+          ip: 10.10.10.2
+          netmask: 255.255.255.0
+          gateway: 10.10.10.1
+          dns_servers: 172.16.1.2
+          type: static
+        customization:
+          password: VMware1!
+        wait_for_customization: yes
+        wait_for_customization_timeout: 360
+      delegate_to: localhost
+      ignore_errors: yes     
