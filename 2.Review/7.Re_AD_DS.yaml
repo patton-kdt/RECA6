@@ -1,41 +1,27 @@
-
 ---
 - hosts: localhost
   vars_files: ./vars.yaml
 
-  vars:
-    vm_common_args:
-      hostname: '{{ vcenter_hostname }}'
-      username: '{{ vcenter_username }}'
-      password: '{{ vcenter_password }}'
-      validate_certs: false
-      vm_id: "{{ student_ID + '-DC' }}"
-      vm_id_type: vm_name
-      vm_username: 'Administrator'
-      vm_password: 'VMware1!'
-      vm_shell: 'c:\windows\system32\windowspowershell\v1.0\powershell.exe'
-      vm_shell_cwd: 'c:\Users\Administrator'
-      wait_for_process: True
-      timeout: 180
-
   tasks:
-    - block:
-        - name: Install_WindowsFeatures_AD-DS
-          community.vmware.vmware_vm_shell:
-            <<: *vm_common_args
-            vm_shell_args: '-command "(Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools)"'
-        
-        - name: Import_Module_ADDSDeployment
-          community.vmware.vmware_vm_shell:
-            <<: *vm_common_args
-            vm_shell_args: '-command "Import-Module ADDSDeployment"'
-        
-        - name: Install_First_ADDSForest
-          community.vmware.vmware_vm_shell:
-            <<: *vm_common_args
-            vm_shell_args: '-command "(Install-ADDSForest -CreateDnsDelegation:$false -DatabasePath C:\Windows\NTDS -DomainMode WinThreshold -DomainName vclass.local -DomainNetbiosName VCLASS -ForestMode WinThreshold -InstallDns:$true -LogPath C:\Windows\NTDS -NoRebootOnCompletion:$false -SysvolPath C:\Windows\SYSVOL -Force:$true -SafeModeAdministratorPassword (ConvertTo-SecureString -AsPlainText \"VMware1!\" -force))"'
-          ignore_errors: yes
-
+    - name: Run PowerShell Commands - ADDS
+      community.vmware.vmware_vm_shell:
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        validate_certs: 'false'
+        vm_id: "{{ student_ID + '-DC' }}"
+        vm_id_type: vm_name
+        vm_username: 'Administrator'
+        vm_password: 'VMware1!'
+        vm_shell: 'c:\windows\system32\windowspowershell\v1.0\powershell.exe'
+        vm_shell_args: "{{ item }}"
+        vm_shell_cwd: 'c:\Users\Administrator'
+        wait_for_process: True
+        timeout: 180
       delegate_to: localhost
       register: shell_command_with_wait_timeout
-
+      ignore_errors: yes
+      loop:
+        - '-command "(Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools)"'
+        - '-command "Import-Module ADDSDeployment"'
+        - '-command "(Install-ADDSForest -CreateDnsDelegation:$false -DatabasePath C:\Windows\NTDS -DomainMode WinThreshold -DomainName vclass.local -DomainNetbiosName VCLASS -ForestMode WinThreshold -InstallDns:$true -LogPath C:\Windows\NTDS -NoRebootOnCompletion:$false -SysvolPath C:\Windows\SYSVOL -Force:$true -SafeModeAdministratorPassword (ConvertTo-SecureString -AsPlainText \"VMware1!\" -force))"'
