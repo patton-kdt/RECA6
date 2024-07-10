@@ -40,7 +40,7 @@
         wait_for_customization_timeout: 360
         state: poweredon
       loop:
-        - { template: "Temp-WinSvr2022-WSL-Ansible-05", vmname: "P00-DNS", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.2", gw: "172.17.1.1", dns: "172.16.1.2", hostname: "DNS" }
+        - { template: "Temp-WinSvr-05", vmname: "P00-DNS", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.2", gw: "172.17.1.1", dns: "172.16.1.2", hostname: "DNS" }
       delegate_to: localhost
       register: deploy_vm
 
