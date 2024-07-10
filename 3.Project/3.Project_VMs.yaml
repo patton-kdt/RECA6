@@ -75,16 +75,15 @@
         wait_for_customization_timeout: 360
         state: poweredon
       loop:
-        - { template: "Temp-Rocky-05", vmname: "P00-HAProxy1", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.5", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private", hostname: "HAProxy1" }
+        - { template: "Temp-Rocky-05", vmname: "P00-Registry", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.3", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private", hostname: "Registry" }
+        - { template: "Temp-TrueNas-05", vmname: "P00-TrueNas", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.4", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private", hostname: "nfs" }
+        - { template: "Temp-Rocky-05", vmname: "P00-HAProxy1", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.5", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private", hostname: "HAProxy1" }        - { template: "Temp-Rocky-05", vmname: "P00-HAProxy2", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.6", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private", hostname: "HAProxy2" }
+        - { template: "Temp-Rocky-05", vmname: "P00-Master1", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.11", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private", hostname: "Master1" }
+        - { template: "Temp-Rocky-05", vmname: "P00-Master2", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.12", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private", hostname: "Master2" }
+        - { template: "Temp-Rocky-05", vmname: "P00-Master3", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.13", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private", hostname: "Master3" }
+        - { template: "Temp-Rocky-05", vmname: "P00-Worker1", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.21", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private", hostname: "Worker1" }
+        - { template: "Temp-Rocky-05", vmname: "P00-Worker2", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.22", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private", hostname: "Worker2" }
+        - { template: "Temp-Rocky-05", vmname: "P00-Worker3", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.23", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private", hostname: "Worker3" }
       delegate_to: localhost
       register: deploy_vm
 
-#        - { template: "Temp-Rocky-05", vmname: "P00-Registry", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.3", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private" }
-#        - { template: "Temp-TrueNas-05", vmname: "P00-TrueNas", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.4", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private" }
-#        - { template: "Temp-Rocky-05", vmname: "P00-HAProxy2", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.6", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private" }
-#        - { template: "Temp-Rocky-05", vmname: "P00-Master1", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.11", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private" }
-#        - { template: "Temp-Rocky-05", vmname: "P00-Master2", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.12", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private" }
-#        - { template: "Temp-Rocky-05", vmname: "P00-Master3", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.13", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private" }
-#        - { template: "Temp-Rocky-05", vmname: "P00-Worker1", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.21", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private" }
-#        - { template: "Temp-Rocky-05", vmname: "P00-Worker2", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.22", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private" }
-#        - { template: "Temp-Rocky-05", vmname: "P00-Worker3", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.23", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private" }
