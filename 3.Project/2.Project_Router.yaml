@@ -1,0 +1,80 @@
+---
+- hosts: localhost
+  vars:
+    vcenter_hostname: "vcsa.vclass.reca6"
+    vcenter_username: "S00@vclass.reca6"
+    vcenter_password: "VMware1!"
+    datacenter_name: "RECA6"
+    project_folder: "RECA6\vm\5.Projects\P00"
+    
+  tasks: 
+    - name: Deploy Project Router from Template
+      community.vmware.vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: 'false'
+        datacenter: '{{datacenter_name}}'
+        
+        template: '{{ item.template }}'
+        folder: '{{ project_folder }}'
+        name: '{{ item.vmname }}'
+        esxi_hostname: "{{ item.host }}"
+        datastore: "{{ item.datastore }}"
+        networks:
+        - name: '{{ item.wan }}'
+          device_type: vmxnet3
+        - name: '{{ item.lan }}'
+          device_type: vmxnet3
+        state: poweredon
+        wait_for_ip_address: true
+        wait_for_ip_address_timeout: 300
+      loop:
+        - { template: "Temp-vyos-05", vmname: "P00-K8s-Router", host: "esxi-05.vclass.reca6", datastore: "Local-05", wan: "VM-172.16.1.x", lan: "Q00-K8s" }
+        - { template: "Temp-vyos-01", vmname: "P00-DevOps-Router", host: "esxi-01.vclass.reca6", datastore: "Local-01", wan: "VM-172.16.1.x", lan: "Q00-DevOps" }
+      delegate_to: localhost
+      register: deploy_vm
+
+    - name: Waiting 10 seconds
+      wait_for:
+        timeout: 10
+      delegate_to: localhost
+
+    - name: VyOS Router Configuration
+      community.vmware.vmware_vm_shell:
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        validate_certs: 'false'
+        datacenter: '{{ datacenter_name }}'
+        
+        folder: '{{ project_folder }}'
+        vm_id: "{{ item.vmname }}"
+        vm_id_type: vm_name
+        vm_username: 'vyos'
+        vm_password: 'vyos'
+        vm_shell: /bin/vbash
+        vm_shell_cwd: "/tmp"
+        vm_shell_args: |-
+          -c "source /opt/vyatta/etc/functions/script-template
+          configure
+          set interfaces ethernet eth1 address '{{ item.langateway }}'
+
+          set nat source rule 10 outbound-interface eth0
+          set nat source rule 10 source address '{{ item.lannetwork }}'
+          set nat source rule 10 translation address masquerade
+           
+          commit
+          save"
+        wait_for_process: True
+        timeout: 180
+      loop:
+        - { vmname: "P00-K8s-Router", langateway: "172.17.1.1/24", lannetwork: "172.17.1.0" }
+        - { vmname: "P00-DevOps-Router", langateway: "172.17.1.1/24", lannetwork: "172.17.1.0" }
+      delegate_to: localhost
+      register: shell_command_with_wait_timeout      
+
+##          set protocols static route 0.0.0.0/0 next-hop 172.16.1.1
+##          set system name-server 172.16.1.2
+##          set service ntp server kr.pool.ntp.org
+##          set service ssh port 22
