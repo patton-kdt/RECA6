@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  vars:
+    esxi_username: "root"
+    esxi_password: "VMware1!"
+ 
+  tasks: 
+    - name: Create Lab Standard Switch
+      community.vmware.vmware_vswitch:
+        hostname: '{{ item.host }}'
+        username: '{{ esxi_username }}'
+        password: '{{ esxi_password }}'
+        validate_certs: no
+        switch: '{{ item.vSwitch }}'
+        security:
+          promiscuous_mode: True
+          mac_changes: True
+          forged_transmits: True
+      loop:
+        - { host: esxi-05.vclass.reca6, vSwitch: Q00-K8s }
+        - { host: esxi-01.vclass.reca6, vSwitch: Q00-DevOps }
+      delegate_to: localhost
+
+    - name: Waiting 10 seconds for completing switch
+      wait_for:
+        timeout: 10
+      delegate_to: localhost
+
+    - name: Add Portgroup to vSwitch
+      community.vmware.vmware_portgroup:
+        hostname: '{{ item.host }}'
+        username: '{{ esxi_username }}'
+        password: '{{ esxi_password }}'
+        validate_certs: no
+        switch: '{{ item.vSwitch }}'
+        portgroup: '{{ item.vSwitch }}'
+      loop:
+        - { host: esxi-05.vclass.reca6, vSwitch: Q00-K8s }
+        - { host: esxi-01.vclass.reca6, vSwitch: Q00-DevOps }
+      delegate_to: localhost
+
