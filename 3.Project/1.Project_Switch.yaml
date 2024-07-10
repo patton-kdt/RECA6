@@ -17,8 +17,8 @@
           mac_changes: True
           forged_transmits: True
       loop:
-        - { host: esxi-05.vclass.reca6, vSwitch: Q00-K8s }
-        - { host: esxi-01.vclass.reca6, vSwitch: Q00-DevOps }
+        - { host: esxi-05.vclass.reca6, vSwitch: P00-K8s }
+        - { host: esxi-01.vclass.reca6, vSwitch: P00-DevOps }
       delegate_to: localhost
 
     - name: Waiting 10 seconds for completing switch
@@ -36,7 +36,7 @@
         switch: '{{ item.vSwitch }}'
         portgroup: '{{ item.vSwitch }}'
       loop:
-        - { host: esxi-05.vclass.reca6, vSwitch: Q00-K8s }
-        - { host: esxi-01.vclass.reca6, vSwitch: Q00-DevOps }
+        - { host: esxi-05.vclass.reca6, vSwitch: P00-K8s }
+        - { host: esxi-01.vclass.reca6, vSwitch: P00-DevOps }
       delegate_to: localhost
 
