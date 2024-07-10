@@ -81,12 +81,19 @@
         vm_shell_args: |-
           -c "source /opt/vyatta/etc/functions/script-template
           configure
+          set interfaces ethernet eth0 description Wan
+          set interfaces ethernet eth0 address dhcp
+          set interfaces ethernet eth0 ipv6 address no-default-link-local
+          set interfaces ethernet eth0 description Lan          
           set interfaces ethernet eth1 address '{{ item.langateway }}'
-
-          set nat source rule 10 outbound-interface eth0
+          set interfaces ethernet eth0 ipv6 address no-default-link-local
+          set nat source rule 10 outbound-interface name eth0
           set nat source rule 10 source address '{{ item.lannetwork }}'
           set nat source rule 10 translation address masquerade
-           
+          set protocols static route 0.0.0.0/0 next-hop 172.16.1.1
+          set service ntp server kr.pool.ntp.org
+          set service ssh port 22
+          set system name-server 172.16.1.2
           commit
           save"
         wait_for_process: True
@@ -96,8 +103,3 @@
         - { vmname: "P00-DevOps-Router", langateway: "172.18.1.1/24", lannetwork: "172.18.1.0" }
       delegate_to: localhost
       register: shell_command_with_wait_timeout      
-
-##          set protocols static route 0.0.0.0/0 next-hop 172.16.1.1
-##          set system name-server 172.16.1.2
-##          set service ntp server kr.pool.ntp.org
-##          set service ssh port 22
