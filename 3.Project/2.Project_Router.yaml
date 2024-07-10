@@ -25,9 +25,11 @@
         - name: '{{ item.wan }}'
           device_type: vmxnet3
           start_connected: true
+          connected: true
         - name: '{{ item.lan }}'
           device_type: vmxnet3
           start_connected: true
+          connected: true
         state: poweredon
       loop:
         - { template: "Temp-vyos-05", vmname: "P00-K8s-Router", host: "esxi-05.vclass.reca6", datastore: "Local-05", wan: "VM-172.16.1.x", lan: "P00-K8s" }
