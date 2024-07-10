@@ -5,7 +5,7 @@
     vcenter_username: "S00@vclass.reca6"
     vcenter_password: "VMware1!"
     datacenter_name: "RECA6"
-    project_folder: "RECA6\vm\5.Projects\P00"
+    project_folder: "RECA6/vm/5.Projects/P00"
     
   tasks: 
     - name: Deploy Project Router from Template
@@ -24,20 +24,20 @@
         networks:
         - name: '{{ item.wan }}'
           device_type: vmxnet3
+          start_connected: true
         - name: '{{ item.lan }}'
           device_type: vmxnet3
+          start_connected: true
         state: poweredon
-        wait_for_ip_address: true
-        wait_for_ip_address_timeout: 300
       loop:
-        - { template: "Temp-vyos-05", vmname: "P00-K8s-Router", host: "esxi-05.vclass.reca6", datastore: "Local-05", wan: "VM-172.16.1.x", lan: "Q00-K8s" }
-        - { template: "Temp-vyos-01", vmname: "P00-DevOps-Router", host: "esxi-01.vclass.reca6", datastore: "Local-01", wan: "VM-172.16.1.x", lan: "Q00-DevOps" }
+        - { template: "Temp-vyos-05", vmname: "P00-K8s-Router", host: "esxi-05.vclass.reca6", datastore: "Local-05", wan: "VM-172.16.1.x", lan: "P00-K8s" }
+        - { template: "Temp-vyos-01", vmname: "P00-DevOps-Router", host: "esxi-01.vclass.reca6", datastore: "Local-01", wan: "VM-172.16.1.x", lan: "P00-DevOps" }
       delegate_to: localhost
       register: deploy_vm
 
-    - name: Waiting 10 seconds
+    - name: Waiting 60 seconds
       wait_for:
-        timeout: 10
+        timeout: 60
       delegate_to: localhost
 
     - name: VyOS Router Configuration
