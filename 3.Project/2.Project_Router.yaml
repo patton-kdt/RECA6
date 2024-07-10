@@ -93,7 +93,7 @@
         timeout: 180
       loop:
         - { vmname: "P00-K8s-Router", langateway: "172.17.1.1/24", lannetwork: "172.17.1.0" }
-        - { vmname: "P00-DevOps-Router", langateway: "172.17.1.1/24", lannetwork: "172.17.1.0" }
+        - { vmname: "P00-DevOps-Router", langateway: "172.18.1.1/24", lannetwork: "172.18.1.0" }
       delegate_to: localhost
       register: shell_command_with_wait_timeout      
 
