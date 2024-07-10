@@ -84,9 +84,9 @@
           set interfaces ethernet eth0 description Wan
           set interfaces ethernet eth0 address dhcp
           set interfaces ethernet eth0 ipv6 address no-default-link-local
-          set interfaces ethernet eth0 description Lan          
+          set interfaces ethernet eth1 description Lan          
           set interfaces ethernet eth1 address '{{ item.langateway }}'
-          set interfaces ethernet eth0 ipv6 address no-default-link-local
+          set interfaces ethernet eth1 ipv6 address no-default-link-local
           set nat source rule 10 outbound-interface name eth0
           set nat source rule 10 source address '{{ item.lannetwork }}'
           set nat source rule 10 translation address masquerade
