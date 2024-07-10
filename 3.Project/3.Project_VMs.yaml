@@ -64,7 +64,9 @@
           start_connected: True
           ip: "{{ item.ip }}"
           netmask: 255.255.255.0
+          gateway: "{{ item.gw }}"
         customization:
+          hostname: '{{ item.hostname }}'
           dns_servers:
             - "{{ item.dns }}"
           dns_suffix:
@@ -73,7 +75,7 @@
         wait_for_customization_timeout: 360
         state: poweredon
       loop:
-        - { template: "Temp-Rocky-05", vmname: "P00-HAProxy1", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.5", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private" }
+        - { template: "Temp-Rocky-05", vmname: "P00-HAProxy1", host: "esxi-05.vclass.reca6", datastore: "Local-05", lan: "P00-K8s", ip: "172.17.1.5", gw: "172.17.1.1", dns: "172.17.1.2", domain: "k8s.private", hostname: "HAProxy1" }
       delegate_to: localhost
       register: deploy_vm
 
