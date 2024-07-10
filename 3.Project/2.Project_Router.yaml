@@ -92,6 +92,7 @@
           set nat source rule 10 translation address masquerade
           set protocols static route 0.0.0.0/0 next-hop 172.16.1.1
           set service ntp server kr.pool.ntp.org
+          set service ntp allow-client address '{{ item.lancidr }}'
           set service ssh port 22
           set system name-server 172.16.1.2
           commit
@@ -99,7 +100,7 @@
         wait_for_process: True
         timeout: 180
       loop:
-        - { vmname: "P00-K8s-Router", langateway: "172.17.1.1/24", lannetwork: "172.17.1.0" }
-        - { vmname: "P00-DevOps-Router", langateway: "172.18.1.1/24", lannetwork: "172.18.1.0" }
+        - { vmname: "P00-K8s-Router", langateway: "172.17.1.1/24", lannetwork: "172.17.1.0", item.lancidr: "172.17.1.0/24" }
+        - { vmname: "P00-DevOps-Router", langateway: "172.18.1.1/24", lannetwork: "172.18.1.0", item.lancidr: "172.18.1.0/24" }
       delegate_to: localhost
       register: shell_command_with_wait_timeout      
