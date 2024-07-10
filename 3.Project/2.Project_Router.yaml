@@ -24,16 +24,37 @@
         networks:
         - name: '{{ item.wan }}'
           device_type: vmxnet3
+        - name: '{{ item.lan }}'
+          device_type: vmxnet3
+        state: poweredon
+      loop:
+        - { template: "Temp-vyos-05", vmname: "P00-K8s-Router", host: "esxi-05.vclass.reca6", datastore: "Local-05", wan: "VM-172.16.1.x", lan: "P00-K8s" }
+        - { template: "Temp-vyos-01", vmname: "P00-DevOps-Router", host: "esxi-01.vclass.reca6", datastore: "Local-01", wan: "VM-172.16.1.x", lan: "P00-DevOps" }
+      delegate_to: localhost
+      register: deploy_vm
+
+    - name: Router Network Connect
+      community.vmware.vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: 'false'
+        datacenter: '{{datacenter_name}}'
+        
+        folder: '{{ project_folder }}'
+        name: '{{ item.vmname }}'
+        networks:
+        - name: '{{ item.wan }}'
+          device_type: vmxnet3
           start_connected: true
           connected: true
         - name: '{{ item.lan }}'
           device_type: vmxnet3
           start_connected: true
           connected: true
-        state: poweredon
       loop:
-        - { template: "Temp-vyos-05", vmname: "P00-K8s-Router", host: "esxi-05.vclass.reca6", datastore: "Local-05", wan: "VM-172.16.1.x", lan: "P00-K8s" }
-        - { template: "Temp-vyos-01", vmname: "P00-DevOps-Router", host: "esxi-01.vclass.reca6", datastore: "Local-01", wan: "VM-172.16.1.x", lan: "P00-DevOps" }
+        - { vmname: "P00-K8s-Router", wan: "VM-172.16.1.x", lan: "P00-K8s" }
+        - { vmname: "P00-DevOps-Router", wan: "VM-172.16.1.x", lan: "P00-DevOps" }
       delegate_to: localhost
       register: deploy_vm
 
