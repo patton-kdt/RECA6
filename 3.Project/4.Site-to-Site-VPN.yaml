@@ -1,0 +1,81 @@
+---
+- hosts: localhost
+  vars:
+    vcenter_hostname: "vcsa.vclass.reca6"
+    vcenter_username: "S00@vclass.reca6"
+    vcenter_password: "VMware1!"
+    datacenter_name: "RECA6"
+    project_folder: "RECA6/vm/5.Projects/P00"
+
+  tasks: 
+    - name: Add Site-to-Site VPN Configuration on Routers
+      community.vmware.vmware_vm_shell:
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        validate_certs: 'false'
+        datacenter: '{{ datacenter_name }}'
+        
+        folder: '{{ project_folder }}'
+        vm_id: "{{ item.vmname }}"
+        vm_id_type: vm_name
+        vm_username: 'vyos'
+        vm_password: 'vyos'
+        vm_shell: /bin/vbash
+        vm_shell_cwd: "/tmp"
+        vm_shell_args: |-
+          -c "source /opt/vyatta/etc/functions/script-template
+          configure
+
+          set interfaces vti vti10 address '{{ item.tunnelip }}'
+
+          set vpn ipsec authentication psk psk-k8s-devops id k8s
+          set vpn ipsec authentication psk psk-k8s-devops id devops
+          set vpn ipsec authentication psk psk-k8s-devops secret key-k8s-devops
+
+          set vpn ipsec esp-group ESP_DEFAULT lifetime 3600
+          set vpn ipsec esp-group ESP_DEFAULT mode tunnel
+          set vpn ipsec esp-group ESP_DEFAULT pfs dh-group19
+          set vpn ipsec esp-group ESP_DEFAULT proposal 10 encryption aes256gcm128
+          set vpn ipsec esp-group ESP_DEFAULT proposal 10 hash sha256
+          set vpn ipsec ike-group IKEv2_DEFAULT close-action none
+          set vpn ipsec ike-group IKEv2_DEFAULT dead-peer-detection action trap
+          set vpn ipsec ike-group IKEv2_DEFAULT dead-peer-detection interval 30
+          set vpn ipsec ike-group IKEv2_DEFAULT dead-peer-detection timeout 120
+          set vpn ipsec ike-group IKEv2_DEFAULT disable-mobike
+          set vpn ipsec ike-group IKEv2_DEFAULT key-exchange ikev2
+          set vpn ipsec ike-group IKEv2_DEFAULT lifetime 10800
+          set vpn ipsec ike-group IKEv2_DEFAULT proposal 10 dh-group 19
+          set vpn ipsec ike-group IKEv2_DEFAULT proposal 10 encryption aes256gcm128
+          set vpn ipsec ike-group IKEv2_DEFAULT proposal 10 hash sha256
+
+          set vpn ipsec interface eth0
+
+          set vpn ipsec site-to-site peer peer_k8s-devops authentication local-id k8s
+          set vpn ipsec site-to-site peer peer_k8s-devops authentication remote-id devops
+          set vpn ipsec site-to-site peer peer_k8s-devops connection-type initiate
+          set vpn ipsec site-to-site peer peer_k8s-devops ike-group IKEv2_DEFAULT
+          set vpn ipsec site-to-site peer peer_k8s-devops ikev2-reauth inherit
+          set vpn ipsec site-to-site peer peer_k8s-devops local-address '{{ item.localip }}'
+          set vpn ipsec site-to-site peer peer_k8s-devops remote-address '{{ item.peerip }}' 
+          set vpn ipsec site-to-site peer peer_k8s-devops vti bind vti10
+          set vpn ipsec site-to-site peer peer_k8s-devops vti esp-group ESP_DEFAULT
+
+          set vpn ipsec options disable-route-autoinstall
+
+          set protocols static route '{{ item.destnet }}' interface vti10
+
+          set nat source rule 9 destination address '{{ item.destnet }}'
+          set nat source rule 9 exclude
+          set nat source rule 9 outbound-interface name eth0
+          set nat source rule 9 source address '{{ item.srcnet }}'
+
+          commit
+          save"
+        wait_for_process: True
+        timeout: 180
+      loop:
+        - { vmname: "P00-K8s-Router", tunnelip: "10.0.0.2/31", localip: "172.16.1.76", peerip: "172.16.1.206", destnet: "172.18.1.0/24", srcnet: "172.17.1.0/24" }
+        - { vmname: "P00-DevOps-Router", tunnelip: "10.0.0.3/31", localip: "172.16.1.206", peerip: "172.16.1.76", destnet: "172.17.1.0/24", srcnet: "172.18.1.0/24" }
+      delegate_to: localhost
+      register: shell_command_with_wait_timeout
