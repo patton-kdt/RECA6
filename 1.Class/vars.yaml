@@ -25,3 +25,5 @@ private_net: "{{ student_ID + '-Trunk' }}"
 
 datastore_name: "Local-05"
 iso_folder: "[{{ datastore_name }}]\\ISO\\"
+
+my_router_ip : "203.244.146.190"
